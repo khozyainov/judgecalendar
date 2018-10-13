@@ -25,6 +25,17 @@
             margin: 4px 2px;
             cursor: pointer;
         }
+        .from-label {
+            background-color: rgb(222, 245, 219);
+            border: none;
+            padding: 12px 26px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
         .first-label {
             background-color: #B6BEFE;
             border: none;
@@ -34,6 +45,7 @@
             display: inline-block;
             font-size: 16px;
             margin: 4px 2px;
+            cursor: pointer;
         }
         .second-label {
             background-color: #FEB7BB;
@@ -44,6 +56,7 @@
             display: inline-block;
             font-size: 16px;
             margin: 4px 2px;
+            cursor: pointer;
         }
         input {
             width: 100px;
@@ -93,20 +106,32 @@
     <div id='intervals'>
         <table>
             <tr>
-                <td><label class='first-label' for="fname">Первый срок</label></td>
-                <td><input type="text" id="firstInterval" name="first" value="16"></td>
+                <td><label class='from-label'>Дата отсчета</label></td>
+                <td></td>
+                <td><label id="fromDate" class='from-label'></label><td>
             </tr>
             <tr>
-                <td><label class='second-label' for="fname">Второй срок</label></td>
-                <td><input type="text" id="secondInterval" name="second" value="16"></td>
+                <td><label class='first-label' for="firstInterval">Первый срок</label></td>
+                <td><input onClick="this.select();" type="text" id="firstInterval" name="first" value="16"></td>
+                <td><label id="firstDate" class='first-label' for="firstInterval"></label><td>
+            </tr>
+            <tr>
+                <td><label class='second-label' for="secondInterval">Второй срок</label></td>
+                <td><input onClick="this.select();" type="text" id="secondInterval" name="second" value="16"></td>
+                <td><label id="secondDate" class='second-label' for="secondInterval"></label></td>
             </tr>
         </table>
     </div>
     <script>
         var monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль',
             'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
+        var months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля',
+            'августа', 'сентября', 'октября', 'ноября', 'декабря']
         var dayNamesShort = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"]
         var showNonCurrentDates = false
+        moment.updateLocale('en', {
+            months :  months
+        });
         
         
         //!!! http://xmlcalendar.ru/data/ru/2018/calendar.xml  !!! 
@@ -142,7 +167,8 @@
                 <day d="12.29" t="2"/>
                 <day d="12.31" t="1"/>
             </days>
-        </calendar>`
+        </calendar>
+        `
 
         var nextYearHolidays = `
         <calendar year="2019" lang="ru" date="2018.08.20">
@@ -171,7 +197,8 @@
                 <day d="11.04" t="1" h="8"/>
                 <day d="12.31" t="2"/>
             </days>
-        </calendar>`
+        </calendar>
+        `
 
         function parseHolidaysAndWorks(xmlDoc){
             var x2js = new X2JS();
@@ -237,7 +264,10 @@
                             color: 'red'
                         },  
                     ]
-                    repaintEvent(events)
+                    repaintEvent(events);
+                    document.getElementById('fromDate').innerHTML = date.format('DD MMMM YYYY');
+                    document.getElementById('firstDate').innerHTML = moment(date1).format('DD MMMM YYYY');
+                    document.getElementById('secondDate').innerHTML = moment(date2).format('DD MMMM YYYY');
                 },
                 dayRender: function (date, cell) {
                     if (date.month()==$('#calendar1').fullCalendar('getDate').month()){
