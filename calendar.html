@@ -1,0 +1,373 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>Calendar</title>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/locale-all.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/x2js/1.2.0/xml2json.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.css" />  
+    
+    <style>
+        .button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 12px 26px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+        .first-label {
+            background-color: #B6BEFE;
+            border: none;
+            padding: 12px 26px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+        }
+        .second-label {
+            background-color: #FEB7BB;
+            border: none;
+            padding: 12px 26px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+        }
+        input {
+            width: 100px;
+            padding: 8px 12px;
+            font-size: 14px;
+            margin: 8px 10px;
+            box-sizing: border-box;
+        }
+        .fc-sat { 
+            background-color:#FCD8ED; 
+        }
+        .fc-sun { 
+            background-color:#FCD8ED;
+        }
+    </style>  
+</head>
+
+<body>
+    <div id='calendar'>
+        <table id="general" class="table table-bordered  table-condensed">
+            <tbody>
+                <tr> 
+                    <td style='width:5%;vertical-align:middle'>
+                        <div id='calendar1'></div>
+                    </td>
+                    <td style='width:0.2%;vertical-align:middle'></td>
+                    <td style='width:5%;vertical-align:middle'>
+                        <div id='calendar2'></div>
+                    </td>
+                    <td style='width:0.2%;vertical-align:middle'></td>
+                    <td style='width:5%;vertical-align:middle'>
+                        <div id='calendar3'></div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id='control'>
+        <tr>
+            <td>
+                <button class='button' id="today-button">Сегодня</button>
+                <button class='button' id="prev-button">Предыдущий</button>
+                <button class='button' id="next-button">Следующий</button>
+            </td>
+        </tr>
+    </div>
+    <div id='intervals'>
+        <table>
+            <tr>
+                <td><label class='first-label' for="fname">Первый срок</label></td>
+                <td><input type="text" id="firstInterval" name="first" value="16"></td>
+            </tr>
+            <tr>
+                <td><label class='second-label' for="fname">Второй срок</label></td>
+                <td><input type="text" id="secondInterval" name="second" value="16"></td>
+            </tr>
+        </table>
+    </div>
+    <script>
+        var monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль',
+            'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
+        var dayNamesShort = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"]
+        var showNonCurrentDates = false
+        
+        
+        //!!! http://xmlcalendar.ru/data/ru/2018/calendar.xml  !!! 
+        //!!! Скопировать нужный год и присвоить переменной текущего или следующего года  !!! 
+        //!!! Секцию с названиями праздников можно удалить <holidays> </holidays>  !!! 
+        var currentYearHolidays = `
+        <calendar year="2018" lang="ru" date="2017.10.22">
+            <days>
+                <day d="01.01" t="1" h="1"/>
+                <day d="01.02" t="1" h="1"/>
+                <day d="01.03" t="1" h="1"/>
+                <day d="01.04" t="1" h="1"/>
+                <day d="01.05" t="1" h="1"/>
+                <day d="01.06" t="1" h="1"/>
+                <day d="01.07" t="1" h="2"/>
+                <day d="01.08" t="1" h="1"/>
+                <day d="02.22" t="2"/>
+                <day d="02.23" t="1" h="3"/>
+                <day d="03.07" t="2"/>
+                <day d="03.08" t="1" h="4"/>
+                <day d="03.09" t="1"/>
+                <day d="04.28" t="2"/>
+                <day d="04.30" t="1"/>
+                <day d="05.01" t="1" h="5"/>
+                <day d="05.02" t="1"/>
+                <day d="05.08" t="2"/>
+                <day d="05.09" t="1" h="6"/>
+                <day d="06.09" t="2"/>
+                <day d="06.11" t="1"/>
+                <day d="06.12" t="1" h="7"/>
+                <day d="11.04" t="1" h="8"/>
+                <day d="11.05" t="1"/>
+                <day d="12.29" t="2"/>
+                <day d="12.31" t="1"/>
+            </days>
+        </calendar>`
+
+        var nextYearHolidays = `
+        <calendar year="2019" lang="ru" date="2018.08.20">
+            <days>
+                <day d="01.01" t="1" h="1"/>
+                <day d="01.02" t="1" h="1"/>
+                <day d="01.03" t="1" h="1"/>
+                <day d="01.04" t="1" h="1"/>
+                <day d="01.05" t="1" h="1"/>
+                <day d="01.06" t="1" h="1"/>
+                <day d="01.07" t="1" h="2"/>
+                <day d="01.08" t="1" h="1"/>
+                <day d="02.22" t="2"/>
+                <day d="02.23" t="1" h="3"/>
+                <day d="03.07" t="2"/>
+                <day d="03.08" t="1" h="4"/>
+                <day d="04.30" t="2"/>
+                <day d="05.01" t="1" h="5"/>
+                <day d="05.02" t="1"/>
+                <day d="05.03" t="1"/>
+                <day d="05.08" t="2"/>
+                <day d="05.09" t="1" h="6"/>
+                <day d="05.10" t="1"/>
+                <day d="06.11" t="2"/>
+                <day d="06.12" t="1" h="7"/>
+                <day d="11.04" t="1" h="8"/>
+                <day d="12.31" t="2"/>
+            </days>
+        </calendar>`
+
+        function parseHolidaysAndWorks(xmlDoc){
+            var x2js = new X2JS();
+            var jsonObj = x2js.xml_str2json( xmlDoc );
+            var year = jsonObj.calendar._year;
+            for (var i=0; i < jsonObj.calendar.days.day.length; i++)
+            {
+                day = jsonObj.calendar.days.day[i];
+                if (day._t == 1)
+                {
+                    holydays.push(year+'.'+day._d)
+                }
+                if (day._t == 2)
+                {
+                    workdays.push(year+'.'+day._d)
+                }
+            }
+        }
+
+        var holydays = [];
+        var workdays = [];
+        
+        parseHolidaysAndWorks(currentYearHolidays)
+        parseHolidaysAndWorks(nextYearHolidays)
+
+        console.log(holydays)
+        console.log(workdays)
+        
+
+            
+        $(function() {
+            $('#calendar1').fullCalendar({
+                aspectRatio: 1,
+                header: {left:   '',
+                        center: 'title',
+                        right:  ''
+                        },
+                monthNames: monthNames,
+                dayNamesShort: dayNamesShort,
+                firstDay: 1,
+                showNonCurrentDates: showNonCurrentDates,
+                dayClick: function(date, jsEvent, view) {
+                    var addDays1 = parseInt($('#firstInterval').val());
+                    var addDays2 = parseInt($('#secondInterval').val());
+                    date1 = addDays(date, addDays1)
+                    date2 = addDays(date, addDays1 + addDays2)
+                    events = [
+                        {
+                            title  : 'event1',
+                            start  : date.format(),
+                            rendering: 'background',
+                        },  
+                        {
+                            title  : 'event2',
+                            start  : date1,
+                            rendering: 'background',
+                            color: 'blue'
+                        },  
+                        {
+                            title  : 'event3',
+                            start  : date2,
+                            rendering: 'background',
+                            color: 'red'
+                        },  
+                    ]
+                    repaintEvent(events)
+                },
+                dayRender: function (date, cell) {
+                    if (date.month()==$('#calendar1').fullCalendar('getDate').month()){
+                        if (isWorkday(date.format('YYYY.MM.DD'))) {
+                            cell.css("background-color", "white");
+                        }
+                        if (isHoliday(date.format('YYYY.MM.DD'))) {
+                            cell.css("background-color", "#FCD8ED");
+                        }
+                    }
+                },
+            })
+        });
+        $(function() {
+            $('#calendar2').fullCalendar({
+                aspectRatio: 1,
+                header: {left:   '',
+                        center: 'title',
+                        right:  ''
+                        },
+                monthNames: monthNames,
+                dayNamesShort: dayNamesShort,
+                firstDay: 1,
+                showNonCurrentDates: showNonCurrentDates,
+                defaultDate: moment().add(1, 'months'),
+                dayRender: function (date, cell) {
+                    if (date.month()==$('#calendar2').fullCalendar('getDate').month()){
+                        if (isWorkday(date.format('YYYY.MM.DD'))) {
+                            cell.css("background-color", "white");
+                        }
+                        if (isHoliday(date.format('YYYY.MM.DD'))) {
+                            cell.css("background-color", "#FCD8ED");
+                        }
+                    }
+                }
+            })
+        });
+        $(function() {
+            $('#calendar3').fullCalendar({
+                aspectRatio: 1,
+                header: {left:   '',
+                        center: 'title',
+                        right:  ''
+                        },
+                monthNames: monthNames,
+                dayNamesShort: dayNamesShort,
+                firstDay: 1,
+                showNonCurrentDates: showNonCurrentDates,
+                defaultDate: moment().add(2, 'months'),
+                dayRender: function (date, cell) {
+                    if (date.month()==$('#calendar3').fullCalendar('getDate').month()){
+                        if (isWorkday(date.format('YYYY.MM.DD'))) {
+                            cell.css("background-color", "white");
+                        }
+                        if (isHoliday(date.format('YYYY.MM.DD'))) {
+                            cell.css("background-color", "#FCD8ED");
+                        }
+                    }
+                }
+            })
+        });
+
+        $('#next-button').click(function() {
+            $('#calendar1').fullCalendar('next');
+            $('#calendar2').fullCalendar('next');
+            $('#calendar3').fullCalendar('next');
+        });
+        $('#prev-button').click(function() {
+            $('#calendar1').fullCalendar('prev');
+            $('#calendar2').fullCalendar('prev');
+            $('#calendar3').fullCalendar('prev');
+        });
+        $('#today-button').click(function() {
+            $('#calendar1').fullCalendar('today');
+            $('#calendar2').fullCalendar('gotoDate', moment().add(1, 'months'));
+            $('#calendar3').fullCalendar('gotoDate', moment().add(2, 'months'));
+        });
+        
+        function repaintEvent(events) {
+            $('#calendar1').fullCalendar('removeEvents');
+            $('#calendar1').fullCalendar('addEventSource', events);
+            $('#calendar2').fullCalendar('removeEvents');
+            $('#calendar2').fullCalendar('addEventSource', events);
+            $('#calendar3').fullCalendar('removeEvents');
+            $('#calendar3').fullCalendar('addEventSource', events);
+        }
+
+        function addDays(date, days) {
+            var result = moment(date.format());
+            var count = 0;
+            while (count < days)
+            {
+                result.add(1, 'days');
+                if (isWeekend(result) || isHoliday(result.format('YYYY.MM.DD'))){
+                    if (!isWorkday(result.format('YYYY.MM.DD'))){
+                        continue;
+                    }
+                    count++;
+                    continue;
+                }
+                count++;
+            }
+            return result.format('YYYY-MM-DD');
+        }
+
+        function isWeekend(date){
+            if (date.day()==0 || date.day()==6){
+                return true;
+            }
+            return false;
+        }
+
+        function isHoliday(date){
+            for( var i=0; i < holydays.length; i++ ){
+                if (holydays[i]==date){
+                    return true;
+                }
+            }
+            return false;   
+        }
+
+        function isWorkday(date){
+            for( var i=0; i < workdays.length; i++ ){
+                if (workdays[i]==date){
+                    return true;
+                }
+            }
+            return false;   
+        }
+
+    </script>    
+</body>
+</html>
