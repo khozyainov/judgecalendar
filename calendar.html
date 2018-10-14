@@ -197,7 +197,12 @@
                 firstDay: 1,
                 showNonCurrentDates: showNonCurrentDates,
                 dayClick: function(date, jsEvent, view) {
-                    renderEvents(date);
+                    if (!isHoliday(date.format('YYYY.MM.DD')) && !isWeekend(date)){
+                        renderEvents(date); 
+                    }
+                    if (isWorkday(date.format('YYYY.MM.DD'))){
+                        renderEvents(date);
+                    }
                 },
                 dayRender: function (date, cell) {
                     if (date.month()==$('#calendar1').fullCalendar('getDate').month()){
