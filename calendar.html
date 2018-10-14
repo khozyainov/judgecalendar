@@ -50,7 +50,6 @@
             display: inline-block;
             font-size: 16px;
             margin: 4px 2px;
-            cursor: pointer;
         }
         .first-label {
             background-color: #B6BEFE;
@@ -61,7 +60,7 @@
             display: inline-block;
             font-size: 16px;
             margin: 4px 2px;
-            cursor: pointer;
+            
         }
         .second-label {
             background-color: #FEB7BB;
@@ -72,7 +71,7 @@
             display: inline-block;
             font-size: 16px;
             margin: 4px 2px;
-            cursor: pointer;
+            
         }
         input {
             width: 50px;
@@ -127,22 +126,22 @@
                 <td><label id="fromDate" class='from-label'></label><td>
             </tr>
             <tr>
-                <td><label class='first-label' for="firstInterval">Первый срок</label></td>
+                <td><label class='first-label' for="">Первый срок</label></td>
                 <td>
                     <button class='plus-minus' id="minus-first" onclick="minusFirst()">-</button>
                     <input onClick="this.select();" type="text" id="firstInterval" name="first" value="16">
                     <button class='plus-minus' id="plus-first" onclick="plusFirst()">+</button>
                 </td>
-                <td><label id="firstDate" class='first-label' for="firstInterval"></label><td>
+                <td><label id="firstDate" class='first-label' for=""></label><td>
             </tr>
             <tr>
-                <td><label class='second-label' for="secondInterval">Второй срок</label></td>
+                <td><label class='second-label' for="">Второй срок</label></td>
                 <td>
                     <button class='plus-minus' id="minus-second" onclick="minusSecond()">-</button>
                     <input onClick="this.select();" type="text" id="secondInterval" name="second" value="16">
                     <button class='plus-minus' id="plus-second" onclick="plusSecond()">+</button>
                 </td>
-                <td><label id="secondDate" class='second-label' for="secondInterval"></label></td>
+                <td><label id="secondDate" class='second-label' for=""></label></td>
             </tr>
         </table>
     </div>
