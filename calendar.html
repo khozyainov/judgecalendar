@@ -26,6 +26,20 @@
             font-size: 16px;
             margin: 4px 2px;
             cursor: pointer;
+            width: 150px;
+        }
+        .plus-minus {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 14px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 2px 2px;
+            cursor: pointer;
+            font-size: 16px;
         }
         .from-label {
             background-color: rgb(222, 245, 219);
@@ -61,7 +75,7 @@
             cursor: pointer;
         }
         input {
-            width: 100px;
+            width: 50px;
             padding: 8px 12px;
             font-size: 14px;
             margin: 8px 10px;
@@ -114,12 +128,20 @@
             </tr>
             <tr>
                 <td><label class='first-label' for="firstInterval">Первый срок</label></td>
-                <td><input onClick="this.select();" type="text" id="firstInterval" name="first" value="16"></td>
+                <td>
+                    <button class='plus-minus' id="minus-first" onclick="minusFirst()">-</button>
+                    <input onClick="this.select();" type="text" id="firstInterval" name="first" value="16">
+                    <button class='plus-minus' id="plus-first" onclick="plusFirst()">+</button>
+                </td>
                 <td><label id="firstDate" class='first-label' for="firstInterval"></label><td>
             </tr>
             <tr>
                 <td><label class='second-label' for="secondInterval">Второй срок</label></td>
-                <td><input onClick="this.select();" type="text" id="secondInterval" name="second" value="16"></td>
+                <td>
+                    <button class='plus-minus' id="minus-second" onclick="minusSecond()">-</button>
+                    <input onClick="this.select();" type="text" id="secondInterval" name="second" value="16">
+                    <button class='plus-minus' id="plus-second" onclick="plusSecond()">+</button>
+                </td>
                 <td><label id="secondDate" class='second-label' for="secondInterval"></label></td>
             </tr>
         </table>
@@ -261,16 +283,38 @@
         });
 
         $('#firstInterval').change(function() {
-            events = $('#calendar1').fullCalendar('clientEvents');
-            date = events[0].start._i;
-            renderEvents(moment(date));
+            repaintAll();
         });
 
         $('#secondInterval').change(function() {
+            repaintAll();
+        });
+
+        function repaintAll(){
             events = $('#calendar1').fullCalendar('clientEvents');
             date = events[0].start._i;
             renderEvents(moment(date));
-        });
+        }
+
+        function minusFirst() {
+            document.getElementById("firstInterval").value = document.getElementById("firstInterval").value - 1;
+            repaintAll();
+        }
+
+        function plusFirst() {
+            document.getElementById("firstInterval").value = Number(document.getElementById("firstInterval").value) + 1;
+            repaintAll();
+        }
+
+        function minusSecond() {
+            document.getElementById("secondInterval").value = document.getElementById("secondInterval").value - 1;
+            repaintAll();
+        }
+
+        function plusSecond() {
+            document.getElementById("secondInterval").value = Number(document.getElementById("secondInterval").value) + 1;
+            repaintAll();
+        }
 
         function renderEvents(date) {
             var addDays1 = parseInt($('#firstInterval').val());
